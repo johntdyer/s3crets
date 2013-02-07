@@ -19,5 +19,5 @@ Gem::Specification.new do |gem|
 
     gem.add_dependency 'rake'
     gem.add_dependency 'json'
-
+    gem.add_dependency 'rainbow'
 end

@@ -1,6 +1,8 @@
+#!/usr/bin/env ruby
+
 require 'optparse'
 require 's3crets'
-
+require "rainbow"
 @options={
     :overwrite => false
 }
@@ -32,4 +34,16 @@ begin
 
 end
 
-Configuratron.new @options
+begin
+    c = Configuratron.new @options
+
+  puts "----------------------------------------".foreground(:blue)
+  puts "[Files Updated]: ".foreground(:green)
+  c.files_updated.each do |f|
+    puts " - #{f}".foreground(:green)
+  end
+  puts "[Finished] ".foreground(:green)
+  puts "----------------------------------------".foreground(:blue)
+rescue Exception => e
+    puts "[ERROR] - Something bad happened [#{e}]".foreground(:red)
+end
