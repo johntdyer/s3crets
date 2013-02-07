@@ -73,9 +73,9 @@ s3crets --secrets-file ~/Projects/deployment_models/full_ha_deployment_model/.se
 ```
 
 ##### Applying Secrets to original JSON files
-`bash
+```bash
 s3crets --secrets-file ~/Projects/deployment_models/full_ha_deployment_model/.secrets --json-dir ~/Projects/deployment_models/full_ha_deployment_model/ec2_json  --overwrite
-`
+```
 ## Contributing
 
 1. Fork it
