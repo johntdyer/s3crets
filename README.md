@@ -61,7 +61,7 @@ Example JSON File
     "jdbc_url": "jdbc:mysql://management1.qa.voxeolabs.net:3306/provisioning"
   }
 }
-`
+```
 
 If the preceeding secrets file is applied against the JSON file above only the mysql key will be merged in, since s3crets assumes all top level keys in the JSON object are correct.  This allows you to have one secrets file and apply it against multiple JSON templates and only the indended data will be merged in.
 
