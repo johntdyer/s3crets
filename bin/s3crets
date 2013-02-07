@@ -1,0 +1,35 @@
+require 'optparse'
+require 's3crets'
+
+@options={
+    :overwrite => false
+}
+
+optparse = OptionParser.new do |opts|
+
+  opts.on('-s', '--secrets-file FILE', "Secret file to merge into JSON") do |s|
+    @options[:secrets_file] = s
+  end
+
+  opts.on('-j', '--json-dir DIR', "Directory to search for json files") do |j|
+    @options[:json_dir] = j
+  end
+
+  opts.on('-o', '--overwrite', "Overwrite JSON, default is false [something.json -> something.new.json]") do |j|
+    @options[:overwrite] = true
+  end
+end
+
+begin
+  optparse.parse!
+  mandatory = [:json_dir]                                             # Enforce the presence of
+  missing = mandatory.select{ |param| @options[param].nil? }          # the -j switch
+  if not missing.empty?                                               #
+    puts "Missing options: #{missing.join(', ')}"                     #
+    puts optparse                                                     #
+    exit                                                              #
+  end
+
+end
+
+Configuratron.new @options
