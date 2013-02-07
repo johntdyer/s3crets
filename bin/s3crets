@@ -9,22 +9,22 @@ require "rainbow"
 
 optparse = OptionParser.new do |opts|
 
-  opts.on('-s', '--secrets-file FILE', "Secret file to merge into JSON") do |s|
+  opts.on('-s', '--secrets-file FILE', "Secret file to merge into JSON (required)") do |s|
     @options[:secrets_file] = s
   end
 
-  opts.on('-j', '--json-dir DIR', "Directory to search for json files") do |j|
+  opts.on('-j', '--json-dir DIR', "Directory to search for json files (required)") do |j|
     @options[:json_dir] = j
   end
 
-  opts.on('-o', '--overwrite', "Overwrite JSON, default is false [something.json -> something.new.json]") do |j|
+  opts.on('-o', '--overwrite', "Overwrite JSON, default is false which will add '.new' to the file name, eg: something.json -> something.new.json") do |j|
     @options[:overwrite] = true
   end
 end
 
 begin
   optparse.parse!
-  mandatory = [:json_dir]                                             # Enforce the presence of
+  mandatory = [:json_dir,:secrets_file]                                             # Enforce the presence of
   missing = mandatory.select{ |param| @options[param].nil? }          # the -j switch
   if not missing.empty?                                               #
     puts "Missing options: #{missing.join(', ')}"                     #
