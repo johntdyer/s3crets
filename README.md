@@ -20,28 +20,26 @@ Or install it yourself as:
 
 Secrets takes 3 arguments, of which only 2 are required `[:json_dir, :secrets_file]`
 
-`bash
+```bash
     -s, --secrets-file FILE          Secret file to merge into JSON (required)
     -j, --json-dir DIR               Directory to search for json files (required)
     -o, --overwrite                  Overwrite JSON, default is false which will add '.new' to the file name, eg: something.json -> something.new.json
-`
+```
 
 ### Example Secrets File:
 
-`json
+```json
 mysql:
     server_repl_password: 11111
     server_root_password: 22222
     server_debian_password: 33333
-fart:
-    foo: bar
-fart2:
-    foo: bar
-`
+random:
+    config: something
+```
 
 Example JSON File
 
-`json
+```json
 {
   "node_type": "management-slave_server",
   "run_list": "recipe[management-slave_server]",
@@ -65,12 +63,14 @@ Example JSON File
 }
 `
 
+If the preceeding secrets file is applied against the JSON file above only the mysql key will be merged in, since s3crets assumes all top level keys in the JSON object are correct.  This allows you to have one secrets file and apply it against multiple JSON templates and only the indended data will be merged in.
+
 ## Examples
 
 ##### Applying Secrets while perserving original JSON files
-`bash
+```bash
 s3crets --secrets-file ~/Projects/deployment_models/full_ha_deployment_model/.secrets --json-dir ~/Projects/deployment_models/full_ha_deployment_model/ec2_json
-`
+```
 
 ##### Applying Secrets to original JSON files
 `bash
