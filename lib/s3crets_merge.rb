@@ -1,6 +1,6 @@
 class Configuratron
 
-    attr_reader :keys, :overwrite, :files_updated
+    attr_reader :overwrite, :files_updated
 
     def initialize(opts={})
         if opts[:secrets_file]
@@ -22,7 +22,6 @@ class Configuratron
     end
 
     def replace_config(dir)
-        counter = 0
         search_folder  =  File.expand_path(dir)
         files          =  Dir.glob(search_folder + "/*.json")
 
@@ -35,7 +34,7 @@ class Configuratron
                 next if json_file =~ /.new./
 
                 begin
-                    node_data  =  JSON.parse(File.read(json_file)+".")
+                    node_data  =  JSON.parse(File.read(json_file))
                 rescue JSON::ParserError => e
                     raise RuntimeError, "JSON Parse error -> #{json_file}"
                 end
