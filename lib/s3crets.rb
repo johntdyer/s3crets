@@ -9,7 +9,6 @@ module S3crets
     require "fileutils"
     require "pathname"
     require "pp"
-    require "s3crets_dig"
     require "s3crets_merge"
     require "rainbow"
 end
