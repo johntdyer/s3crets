@@ -22,40 +22,43 @@ class Configuratron
     end
 
     def replace_config(dir)
-
-        search_folder = File.expand_path(dir)
-        files =  Dir.glob(search_folder + "/*.json")
+        counter = 0
+        search_folder  =  File.expand_path(dir)
+        files          =  Dir.glob(search_folder + "/*.json")
 
         if files.empty?
             puts "Was unable to find any JSON files [#{search_folder}]"
         else
+
             Dir.glob(File.expand_path(dir) + "/*.json") do |json_file|
 
                 next if json_file =~ /.new./
 
-                @secrets.keys.each do |k|
+                begin
+                    node_data  =  JSON.parse(File.read(json_file)+".")
+                rescue JSON::ParserError => e
+                    raise RuntimeError, "JSON Parse error -> #{json_file}"
+                end
 
-                    node_data =  JSON.parse(File.read(json_file))
-
-                    if node_data.dig(k)
-
-                        json = node_data.merge({
-                                    k => node_data[k].merge!(@secrets[k])
-                                })
-
-                        file_to_write = get_file_name(json_file)
-                        files_updated << file_to_write
-                        File.open(file_to_write, 'w') do |fh|
-                           fh.puts JSON.pretty_generate(json)
-                           fh.close
-                        end
-                    end
+                # See if keys have intersection
+                unless (@secrets.keys & node_data.keys).empty?
+                    node_data.merge! @secrets.select { |k| node_data.keys.include? k }
+                    file_to_write = get_file_name(json_file)
+                    write_file(file_to_write,node_data)
                 end
             end
         end
     end
 
     private
+
+    def write_file(file,data)
+        @files_updated << file
+        File.open(file, 'w') do |fh|
+            fh.puts JSON.pretty_generate(data)
+            fh.close
+        end
+    end
 
     def get_file_name(json_file)
         f = File.split(json_file)
