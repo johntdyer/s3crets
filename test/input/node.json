@@ -1,0 +1,9 @@
+{
+  "awesome_service": {
+    "password": "PLACEHOLDER",
+    "db": {
+      "hostname": "example.com",
+      "password": "PLACEHOLDER"
+    }
+  }
+}
