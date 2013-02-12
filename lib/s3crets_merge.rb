@@ -1,6 +1,6 @@
 class Configuratron
 
-    attr_reader :overwrite, :files_updated
+    attr_reader :keys, :overwrite, :files_updated
 
     def initialize(opts={})
         if opts[:secrets_file]
@@ -22,41 +22,55 @@ class Configuratron
     end
 
     def replace_config(dir)
-        search_folder  =  File.expand_path(dir)
-        files          =  Dir.glob(search_folder + "/*.json")
+
+        search_folder = File.expand_path(dir)
+        files =  Dir.glob(search_folder + "/*.json")
 
         if files.empty?
             puts "Was unable to find any JSON files [#{search_folder}]"
         else
-
             Dir.glob(File.expand_path(dir) + "/*.json") do |json_file|
 
                 next if json_file =~ /.new./
 
-                begin
-                    node_data  =  JSON.parse(File.read(json_file))
-                rescue JSON::ParserError => e
-                    raise RuntimeError, "JSON Parse error -> #{json_file}"
+                node_data =  JSON.parse(File.read(json_file))
+
+                merge_hashes(@secrets, node_data)
+
+                file_to_write = get_file_name(json_file)
+                files_updated << file_to_write
+                File.open(file_to_write, 'w') do |fh|
+                   fh.puts JSON.pretty_generate(node_data)
+                   fh.close
                 end
 
-                # See if keys have intersection
-                unless (@secrets.keys & node_data.keys).empty?
-                    node_data.merge! @secrets.select { |k| node_data.keys.include? k }
-                    file_to_write = get_file_name(json_file)
-                    write_file(file_to_write,node_data)
-                end
             end
         end
     end
 
     private
 
-    def write_file(file,data)
-        @files_updated << file
-        File.open(file, 'w') do |fh|
-            fh.puts JSON.pretty_generate(data)
-            fh.close
+    # Merge source into destination in-place
+    # Only where they have keys in common
+    # Taking care not to lose keys in destination but not source
+    def merge_hashes(source, destination)
+      source.each_key do |key|
+
+        if destination.has_key?(key)
+
+          case source[key]
+          when Hash
+           merge_hashes( source[key], destination[key] )
+          when String
+            destination[key] = source[key]
+          else
+            puts "Searching through source hash for a string but found #{source[key].class}"
+            exit 1
+          end
+
         end
+
+      end
     end
 
     def get_file_name(json_file)
