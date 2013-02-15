@@ -35,13 +35,15 @@ class Configuratron
 
                 node_data =  JSON.parse(File.read(json_file))
 
-                merge_hashes(@secrets, node_data)
+                modified = merge_hashes(@secrets, node_data)
 
-                file_to_write = get_file_name(json_file)
-                files_updated << file_to_write
-                File.open(file_to_write, 'w') do |fh|
-                   fh.puts JSON.pretty_generate(node_data)
-                   fh.close
+                if modified
+                  file_to_write = get_file_name(json_file)
+                  files_updated << file_to_write
+                  File.open(file_to_write, 'w') do |fh|
+                     fh.puts JSON.pretty_generate(node_data)
+                     fh.close
+                  end
                 end
 
             end
@@ -53,24 +55,32 @@ class Configuratron
     # Merge source into destination in-place
     # Only where they have keys in common
     # Taking care not to lose keys in destination but not source
+    # Returns whether or not destination was modified
     def merge_hashes(source, destination)
+
+      modified = false
+
       source.each_key do |key|
-
         if destination.has_key?(key)
-
           case source[key]
           when Hash
-           merge_hashes( source[key], destination[key] )
+           modified = merge_hashes( source[key], destination[key] )
           when String
             destination[key] = source[key]
+            modified = true
           else
             puts "Searching through source hash for a string but found #{source[key].class}"
             exit 1
           end
-
         end
-
       end
+
+      if modified
+        return true
+      else
+        return false
+      end
+
     end
 
     def get_file_name(json_file)
