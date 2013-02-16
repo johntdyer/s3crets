@@ -56,15 +56,16 @@ class Configuratron
     # Only where they have keys in common
     # Taking care not to lose keys in destination but not source
     # Returns whether or not destination was modified
-    def merge_hashes(source, destination)
+    def merge_hashes(source, destination, depth = 0)
 
       modified = false
 
       source.each_key do |key|
+
         if destination.has_key?(key)
           case source[key]
           when Hash
-           modified = merge_hashes( source[key], destination[key] )
+           modified = merge_hashes( source[key], destination[key], depth + 1 )
           when String
             destination[key] = source[key]
             modified = true
@@ -72,7 +73,13 @@ class Configuratron
             puts "Searching through source hash for a string but found #{source[key].class}"
             exit 1
           end
+        else
+          # intent is that if destination has a top-level key
+          # and there is a subkey in source but not destination
+          # it is added to destination
+          destination[key] = source[key] if depth > 0
         end
+
       end
 
       if modified
