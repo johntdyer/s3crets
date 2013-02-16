@@ -1,0 +1,9 @@
+{
+  "awesome_service": {
+    "password": "123",
+    "db": {
+      "hostname": "example.com",
+      "password": "abc"
+    }
+  }
+}
