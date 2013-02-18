@@ -4,6 +4,9 @@
     "db": {
       "hostname": "example.com",
       "password": "abc"
+    },
+    "api": {
+      "password": "456"
     }
   }
 }
